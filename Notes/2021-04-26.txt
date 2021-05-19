@@ -1,0 +1,19 @@
+This weeks objectives:
+Identify code environment (python, c, octave, R) (check)
+Get data loaded into environment (check)
+Get raw data into a classifier
+Stretch goal:
+Compare original labels to classifier 
+
+Meeting this week:
+classify function
+
+
+Next weeks objectives:
+Singular value decomposition (SVD)
+Eigen vectors
+Combinded magnitude (sqr of sum of sqrs)
+Rotational transform
+
+classify function, stats package
+

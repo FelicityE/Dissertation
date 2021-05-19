@@ -1,0 +1,10 @@
+2021-05-04
+
+goals for next week
+Data fusion
+	- singular value decomposition (SVD)
+	- eigienvalues / vectors
+	- combined magnitude of all axes (x^2+y^2+z^2)^.5
+
+Maybe not DF
+	- rotational transform, pick a signal (channel) as a origin

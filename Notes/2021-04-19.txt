@@ -1,0 +1,15 @@
+2021-04-19
+
+Felcity found a data set, yay!
+url
+
+Discussed classifier, starting with a train on all and test on all
+Shallow types: multinomial logistic regression, and naive bayes
+Deep learning: later
+
+Next week objectives:
+Identify code environment (python, c, octave, R)
+Get data loaded into environment 
+Get raw data into a classifier
+
+Compara original labels to classifier 
