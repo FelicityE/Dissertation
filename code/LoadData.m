@@ -53,6 +53,7 @@ function [nFiles] = LoadData(varargin)
     % B = [thing{1}]
 
     % getting data from all files, storing in struct dataset
+    dataset.nFiles = nFiles;
     for i=1:nFiles
       %new data path for each file
       tempData.(strcat("data",(num2str(i)))) = importdata(allFiles(i,1:end),"\t",1); %%%%%%%%%%%%% assumed tab for column separation

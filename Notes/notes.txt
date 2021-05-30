@@ -1,0 +1,7 @@
+Found datasets that use myoband arm gesture sensors
+
+Tried FFT on 8 channels - does not work since data recorded in repeating pattens of gestures + try windowed?
+
+PCA for 8 channels
+
+find shape compare to classify
