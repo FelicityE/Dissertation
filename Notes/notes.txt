@@ -1,7 +1,19 @@
 Found datasets that use myoband arm gesture sensors
 
-Tried FFT on 8 channels - does not work since data recorded in repeating pattens of gestures + try windowed?
+FFT on 8 channels - nonconclusive since data recorded in repeating pattens of gestures ... try windowed?
 
-PCA for 8 channels
+** Find shape compare to class?
 
-find shape compare to classify
+-- Updates for meeting
+PCA used to combine the 8 channels
+- Separation of geustures not apparent
+- Moving average and SD over time is too similar between guestures
+
+Tried DPD (distance of each point per x dimensions)
+- Unable to find clusters between or amoung channels based on mean and variance
+
+Moving FFT
+- unable to use movfun function (seek suggestions from winfree)
+
+LDA
+- Unable to get data in appropreiate formate for train_sc/TEST_SC functions (seek suggestions from winfree)
