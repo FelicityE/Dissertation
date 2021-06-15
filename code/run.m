@@ -414,237 +414,150 @@ if(LDA)
 endif
 
 %% Trying something
-plotOn = false;
-if(plotOn)
-  dat = dataset.data1;
+DPD = false;
+if(DPD)
+  plotOn = false;
+  if(plotOn)
+    dat = dataset.data1;
 
-  figure(++plotN)
-  subplot(3,2,1)
-  scatter(dat.channel1(dat.class(:)==1),dat.channel2(dat.class(:)==1))
-  subplot(3,2,2)
-  scatter(dat.channel1(dat.class(:)==2),dat.channel2(dat.class(:)==2))
-  subplot(3,2,3)
-  scatter(dat.channel1(dat.class(:)==3),dat.channel2(dat.class(:)==3))
-  subplot(3,2,4)
-  scatter(dat.channel1(dat.class(:)==4),dat.channel2(dat.class(:)==4))
-  subplot(3,2,5)
-  scatter(dat.channel1(dat.class(:)==5),dat.channel2(dat.class(:)==5))
-  subplot(3,2,6)
-  scatter(dat.channel1(dat.class(:)==6),dat.channel2(dat.class(:)==6))
+    figure(++plotN)
+    subplot(3,2,1)
+    scatter(dat.channel1(dat.class(:)==1),dat.channel2(dat.class(:)==1))
+    subplot(3,2,2)
+    scatter(dat.channel1(dat.class(:)==2),dat.channel2(dat.class(:)==2))
+    subplot(3,2,3)
+    scatter(dat.channel1(dat.class(:)==3),dat.channel2(dat.class(:)==3))
+    subplot(3,2,4)
+    scatter(dat.channel1(dat.class(:)==4),dat.channel2(dat.class(:)==4))
+    subplot(3,2,5)
+    scatter(dat.channel1(dat.class(:)==5),dat.channel2(dat.class(:)==5))
+    subplot(3,2,6)
+    scatter(dat.channel1(dat.class(:)==6),dat.channel2(dat.class(:)==6))
 
-  figure(++plotN)
-  scatter3(dataset.data1.channel1, dataset.data1.channel2, dataset.data1.class)
+    figure(++plotN)
+    scatter3(dataset.data1.channel1, dataset.data1.channel2, dataset.data1.class)
+  endif
+
+  %% Re-org data
+  dat.data = [];
+  dat.time = [];
+  dat.class = [];
+  dat.len = [];
+  for(i = 1:Ndata);
+    dat.len = [dat.len;length(dataset.(strcat("data",(num2str(i)))).channel1)];
+    dat.time = [dat.time;dataset.(strcat("data",(num2str(i)))).time];
+    dat.class = [dat.class;dataset.(strcat("data",(num2str(i)))).class];
+    temp = [];
+    for j = 1:NChan
+      temp = [temp,dataset.(strcat("data",(num2str(i)))).(strcat("channel",(num2str(j))))];
+    endfor
+    dat.data = [dat.data; temp];
+  endfor
+
+  %% Length of each guesture per length of each dataset
+  temp = [];
+  temp(1) = 0;
+  for(i = 2:Ndata+1)
+    temp(i) = sum(dat.len(1:i-1));
+  endfor
+  temp(1) = 1;
+  DPD.len = [];
+  for(i = 1:Ndata)
+    for(j = 1:NG)
+      DPD.len(i,j) = length(dat.class(dat.class(temp(i):temp(i+1))==j));
+    endfor
+  endfor
+  % DPD.G1.len(3) = length(dat.class(dat.class(sum(dat.len(1:2)):sum(dat.len(1:3)))==1));
+
+  %% Distance of each point to the center (0) for each guesture in 8 channel dimensions
+  DPD.Dist = [];
+
+  for(k = 1:NChan)
+    for(j = 1:NChan)
+      temp = [];
+      for(i = 1:NG)
+        temp = [temp;sqrt(sum(dat.data(dat.class(:) == i,k:j).^2,2))];
+      endfor
+      DPD.Dist = [DPD.Dist, temp];
+    endfor
+  endfor
+  temp = [];
+  for(i = 1:NG)
+    temp = [temp; dat.class(dat.class(:)==i)];
+  endfor
+  DPD.Dist = [DPD.Dist, temp];
+
+  %% Average and variation of distances per guesture
+  temp1 = [];
+  temp1(1) = 0;
+  for(i = 2:NG+1)
+    temp1 = [temp1; DPD.len(:,i-1)];
+  endfor
+  temp = [];
+  temp(1) = 0;
+  for(i = 2:length(temp1))
+    temp(i) = sum(temp1(1:i));
+  endfor
+  temp = temp';
+  temp(1) = 1;
+
+  DPD.mu = [];
+  DPD.sig = [];
+  DPD.class = [];
+
+  for(j = 1:size(DPD.Dist,2)-1)
+    tempmu = [];
+    tempsig = [];
+    for(i = 1:length(temp)-1)
+      tempmu = [tempmu;mean(DPD.Dist(temp(i):temp(i+1),j))];
+      tempsig = [tempsig;var(DPD.Dist(temp(i):temp(i+1),j))];
+      DPD.class(i) = DPD.Dist(temp(i),end);
+    endfor
+    DPD.mu = [DPD.mu, tempmu];
+    DPD.sig = [DPD.sig, tempmu];
+  endfor
+
+  % for(i = 1:Ndata*NG)
+  %   for(j = 1:size(DPD.Dist,2)-1)
+  %     DPD.mu = [DPD.mu;mean(DPD.Dist(temp(i):temp(i+1),j))];
+  %     DPD.sig = [DPD.sig;var(DPD.Dist(temp(i):temp(i+1),j))];
+  %     DPD.class = [DPD.class;DPD.Dist(temp(i),end)];
+  %   endfor
+  % endfor
+  DPD.mu2 = [];
+  DPD.sig2 = [];
+  % for(i = 1:)
+    DPD.mu2 = sqrt(sum(DPD.mu.^2,2));
+    DPD.sig2 = sqrt(sum(DPD.sig.^2,2));
+  % endfor
+
+  plotN++;
+  numplts = 6;
+  for(i = 1:numplts)
+    figure(plotN)
+    subplot(floor(sqrt(numplts)), ceil(sqrt(numplts)),i)
+    scatter3(DPD.mu(:,i),DPD.mu(:,i+1),DPD.mu(:,i+2),50*DPD.class,DPD.class,"filled");
+    figure(plotN+1)
+    subplot(floor(sqrt(numplts)), ceil(sqrt(numplts)),i)
+    scatter3(DPD.sig(:,i),DPD.sig(:,i+1),DPD.sig(:,i+2),50*DPD.class,DPD.class,"filled");
+    figure(plotN+2)
+    subplot(floor(sqrt(numplts)), ceil(sqrt(numplts)),i)
+    scatter3(DPD.sig(:,i),DPD.mu(:,i),DPD.mu(:,i+1),50*DPD.class,DPD.class,"filled");
+    figure(plotN+3)
+    subplot(floor(sqrt(numplts)), ceil(sqrt(numplts)),i)
+    scatter3(DPD.mu(:,i),DPD.sig(:,i),DPD.sig(:,i+1),50*DPD.class,DPD.class,"filled");
+  endfor
+  plotN += 3;
 endif
 
-%% Re-org data
-dat.data = [];
-dat.time = [];
-dat.class = [];
-dat.len = [];
-for(i = 1:Ndata);
-  dat.len = [dat.len;length(dataset.(strcat("data",(num2str(i)))).channel1)];
-  dat.time = [dat.time;dataset.(strcat("data",(num2str(i)))).time];
-  dat.class = [dat.class;dataset.(strcat("data",(num2str(i)))).class];
-  temp = [];
-  for j = 1:NChan
-    temp = [temp,dataset.(strcat("data",(num2str(i)))).(strcat("channel",(num2str(j))))];
-  endfor
-  dat.data = [dat.data; temp];
-endfor
-
-%% Length of each guesture per length of each dataset
-temp = [];
-temp(1) = 0;
-for(i = 2:Ndata+1)
-  temp(i) = sum(dat.len(1:i-1));
-endfor
-temp(1) = 1;
-DPD.len = [];
-for(i = 1:Ndata)
-  for(j = 1:NG)
-    DPD.len(i,j) = length(dat.class(dat.class(temp(i):temp(i+1))==j));
-  endfor
-endfor
-% DPD.G1.len(3) = length(dat.class(dat.class(sum(dat.len(1:2)):sum(dat.len(1:3)))==1));
-
-%% Distance of each point to the center (0) for each guesture in 8 channel dimensions
-DPD.Dist = [];
-
-for(k = 1:NChan)
-  for(j = 1:NChan)
-    temp = [];
-    for(i = 1:NG)
-      temp = [temp;sqrt(sum(dat.data(dat.class(:) == i,k:j).^2,2))];
-    endfor
-    DPD.Dist = [DPD.Dist, temp];
-  endfor
-endfor
-temp = [];
-for(i = 1:NG)
-  temp = [temp; dat.class(dat.class(:)==i)];
-endfor
-DPD.Dist = [DPD.Dist, temp];
-
-%% Average and variation of distances per guesture
-temp1 = [];
-temp1(1) = 0;
-for(i = 2:NG+1)
-  temp1 = [temp1; DPD.len(:,i-1)];
-endfor
-temp = [];
-temp(1) = 0;
-for(i = 2:length(temp1))
-  temp(i) = sum(temp1(1:i));
-endfor
-temp = temp';
-temp(1) = 1;
-
-DPD.mu = [];
-DPD.sig = [];
-DPD.class = [];
-
-for(j = 1:size(DPD.Dist,2)-1)
-  tempmu = [];
-  tempsig = [];
-  for(i = 1:length(temp)-1)
-    tempmu = [tempmu;mean(DPD.Dist(temp(i):temp(i+1),j))];
-    tempsig = [tempsig;var(DPD.Dist(temp(i):temp(i+1),j))];
-    DPD.class(i) = DPD.Dist(temp(i),end);
-  endfor
-  DPD.mu = [DPD.mu, tempmu];
-  DPD.sig = [DPD.sig, tempmu];
-endfor
-
-% for(i = 1:Ndata*NG)
-%   for(j = 1:size(DPD.Dist,2)-1)
-%     DPD.mu = [DPD.mu;mean(DPD.Dist(temp(i):temp(i+1),j))];
-%     DPD.sig = [DPD.sig;var(DPD.Dist(temp(i):temp(i+1),j))];
-%     DPD.class = [DPD.class;DPD.Dist(temp(i),end)];
-%   endfor
-% endfor
-DPD.mu2 = [];
-DPD.sig2 = [];
-% for(i = 1:)
-  DPD.mu2 = sqrt(sum(DPD.mu.^2,2));
-  DPD.sig2 = sqrt(sum(DPD.sig.^2,2));
-% endfor
-
-plotN++;
-numplts = 6;
-for(i = 1:numplts)
-  figure(plotN)
-  subplot(floor(sqrt(numplts)), ceil(sqrt(numplts)),i)
-  scatter3(DPD.mu(:,i),DPD.mu(:,i+1),DPD.mu(:,i+2),50*DPD.class,DPD.class,"filled");
-  figure(plotN+1)
-  subplot(floor(sqrt(numplts)), ceil(sqrt(numplts)),i)
-  scatter3(DPD.sig(:,i),DPD.sig(:,i+1),DPD.sig(:,i+2),50*DPD.class,DPD.class,"filled");
-  figure(plotN+2)
-  subplot(floor(sqrt(numplts)), ceil(sqrt(numplts)),i)
-  scatter3(DPD.sig(:,i),DPD.mu(:,i),DPD.mu(:,i+1),50*DPD.class,DPD.class,"filled");
-  figure(plotN+3)
-  subplot(floor(sqrt(numplts)), ceil(sqrt(numplts)),i)
-  scatter3(DPD.mu(:,i),DPD.sig(:,i),DPD.sig(:,i+1),50*DPD.class,DPD.class,"filled");
-endfor
-plotN += 3;
-
-% for(i = 1:NG)
-%   for(j = 1:Ndata)
-%     DPD.mu(1,1) = mean(DPD.Dist(1:DPD.len(1,1)));
-%     DPD.mu(2,1) = mean(DPD.Dist(DPD.len(1,1)+DPD.len(1,1):DPD.len(1,1)+DPD.len(2,1)));
-
-%     strt = sum(dat.len(1:i-1));
-%     nd = sum(dat.len(1:i));
-%     if(i == 1)
-%       DPD.mu(i,j) = mean(DPD.Dist(1:DPD.len(i,j)));
-%       DPD.sig(i,j) = var(DPD.Dist(1:DPD.len(i,j)));
-%     else
-%       DPD.mu(i,j) = mean(DPD.Dist(strt:nd));
-%       DPD.sig(i,j) = var(DPD.Dist(strt:nd));
-%     endif
-%   endfor
-% endfor
-
-
-
-% DPD.G1.dist = sqrt(sum(dat.data(dat.class(:) == 1,:).^2,2));
-
-
-% >> length(dat.class(:)==0)
-%                                 ans =  422488
-% >> length(dat.class(dat.class(:)==0))
-%                                 ans =  277608
-% >> length(dat.class(dat.class(:)==1))
-%                                 ans =  24049
-% >> length(dat.class(dat.class(:)==2))
-%                                 ans =  23288
-% >> length(dat.class(dat.class(:)==3))
-%                                 ans =  24606
-% >> length(dat.class(dat.class(:)==4))
-%                                 ans =  24149
-% >> length(dat.class(dat.class(:)==5))
-%                                 ans =  24400
-% >> length(dat.class(dat.class(:)==6))
-%                                 ans =  24388
-
-% DPD.G1.mu = [];
-% DPD.G1.sig = [];
-% DPD.G1.mu(1) = mean(DPD.G1.dist(1:DPD.G1.len(1)));
-% DPD.G1.sig(1) = var(DPD.G1.dist(1:DPD.G1.len(1)));
-% for(i = 2:Ndata)
-%   DPD.G1.mu(i) = mean(DPD.G1.dist(DPD.G1.len(i-1):sum(DPD.len(1:i))));
-%   DPD.G1.sig(i) = var(DPD.G1.dist(DPD.G1.len(i-1):sum(DPD.len(1:i))));
-% endfor
-
-% plot(DPD.G1.mu,DPD.G1.sig)
-% DPD.G1.dist = 
-
-% wlen = 2;
-% DPD.G1 = sqrt(sum(dat.data(dat.class(:) == 1,:).^2,2));
-% DPDG1 = [];
-% DPDG1 = DPD.G1;
-% x = movfun(@(DPDG1) mean(DPDG1), DPDG1, wlen);
-% y = movfun(@(DPDG1) var(DPDG1), DPDG1, wlen);
-
-% scatter(x,y);
-
-% plot(x,y)
-
-% DPD.len = NaN(Ndata,NG); %number of data points in dataset n by each gesture n
-% for(i = 1:Ndata)
-%   for(j = 1:NG)
-%     DPD.len(i,j) =  length(dat.data())
-%   endfor
-% endfor
-% DPD.Dist = NaN(sum(dat.len),NG);
-% DPD.mu = [];
-% DPD.SD = [];
-% for(i:Ndata)
-%   DPD.
-% endfor
-% DPD.G1.dat = [];
-
-% plotN++;
-% for(k = 1:Ndata)
-%   for(i=1:6)
-%     DPD.(strcat("G",num2str(i))).dat = dat(dataset.(strcat("data",(num2str(k)))).class(:)==i,1).^2;
-%     for(j = 2:8)
-%       DPD.(strcat("G",num2str(i))).dat += dat(dataset.(strcat("data",(num2str(k)))).class(:)==i,j).^2;
-%     endfor
-%     DPD.(strcat("G",num2str(i))).dat = sqrt(DPD.(strcat("G",num2str(i))).dat);
-%     DPD.(strcat("G",num2str(i))).mu = mean(DPD.(strcat("G",num2str(i))).dat);
-%     DPD.(strcat("G",num2str(i))).sig = var(DPD.(strcat("G",num2str(i))).dat);
-
-%     figure(plotN)
-%     hold on
-%     scatter(DPD.(strcat("G",num2str(i))).mu,DPD.(strcat("G",num2str(i))).sig,"filled");
-%     hold off
-%   endfor
-% endfor
-
-
-
-
-
+%% fft 
+FFT = true;
+if(FFT)
+  dat = dataset.data1.channel1;
+  dat = dat';
+  rll = 250;
+  movfun(@fft, dat, rll,"Endpoints","shrink");
+endif
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
