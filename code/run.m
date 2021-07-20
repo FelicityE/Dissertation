@@ -57,9 +57,9 @@ if(plotChanVClass)
   endfor
 endif
 
-%% Running PCA
+%% Running PCA 
 % [coeff,score,latent] = pca(dataset.data1.channel1) %not implemented yet
-if(PCA)
+if(PCA) %% This mostly works.. but is there something better?
   if(plotAllPCvTime) % for each dataset, plot PC over time
     plotN++;
     lege = [""];
@@ -385,7 +385,7 @@ if(PCA)
 endif
 
 %% Running LDA
-if(LDA)
+if(LDA) %% Not currently working, pls seek help
   % for(i = 1:Ndata)
   %   dat.(num2str(i)).data = [];
   %   dat.(num2str(i)).time= [];
@@ -410,7 +410,7 @@ if(LDA)
                 % dataset.data1.class(dataset.data1.class()==1), ...
                 % dataset.data1.class(dataset.data1.class()==1), ...
                 % dataset.data1.class(dataset.data1.class()==1)];
-  CC = train_sc(tempDat,tempClass,'LDA');
+  CC = train_sc(tempDat,tempClass,'LDA'); %% IDK how to format data for this function 
 endif
 
 %% Trying something
@@ -552,11 +552,11 @@ endif
 
 %% fft 
 FFT = true;
-if(FFT)
+if(FFT) %% Need help with movfun
   dat = dataset.data1.channel1;
   dat = dat';
   rll = 250;
-  movfun(@fft, dat, rll,"Endpoints","shrink");
+  movfun(@fft, dat, rll,"Endpoints","shrink"); %% Also not working
 endif
 
 
