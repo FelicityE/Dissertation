@@ -1,0 +1,42 @@
+Comprehensive done for Dissertation credits?
+
+Possible classes:
+Required
+ME 573: Biomaterials (spring 2022)
+BIO 540: Comparative Animal Physiology (Not Currently offered, needs replacement)
+
+ME 580: Composits
+
+INF 685: 6 credits
+-----------------------------------------------
+* Current Work
+Data Aquisition: 
+  Possibly need better real time data
+  Bootstrapping to increase available data??
+
+Preprocessing:
+  FFT: Need help with mov_fun function / or proper windowing technique in Octave
+
+Dimentionality Reduction:
+  PCA: Move to classification/clustering
+  - Take new data and transform to new dimension
+  - Feed that into classifier
+
+  LDA: Need help with train_sc function in octave/ or writing own LDA function
+
+* Not completed
+Classification/clustering:
+  LDA?
+  ANN
+  SVM?
+
+Validation:
+  K-fold cross-val
+  Rand sum cross-val
+
+
+Also Maybe try:
+Wavelet Transformation
+-E. Gokgoz and A. Subasi, “Comparison of decision tree algorithms for
+EMG signal classification using DWT,” Biomed. Signal Process. Control,
+vol. 18, pp. 138–144, Apr. 2015, doi: 10.1016/j.bspc.2014.12.005.
