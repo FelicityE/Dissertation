@@ -1,0 +1,26 @@
+Facebook and google fellowships
+INF 685 
+
+
+
+
+Todoo
+
+Do interpolation
+make time step equal
+frequency should be same, power should be different for each window
+
+octave fft returns (frequency, power)
+use power create x
+y = classes
+put x and y into classify
+
+compherehesive
+Intro
+- motivation
+
+Background
+- Litrev of things that realate to dissertaions
+
+
+Find channel with most activity make zeroth channel 
