@@ -1,0 +1,7 @@
+ NTFS partion both windows and linux can access
+ point to partion in synology
+
+Add new papers to svn
+synology.com > support> download center > nas DS1815+ > desktop utilities > sysnology drive client
+
+google backup and sync
